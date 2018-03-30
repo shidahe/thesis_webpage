@@ -124,22 +124,22 @@ As an application, we demonstrate that these line segments greatly improve the q
           <div class="col-lg-12 mx-auto">
             <h2>Motivation</h2>
             <p class="lead">
-Combining a sparse SLAM system (e.g. <a href="http://www.robots.ox.ac.uk/~gk/PTAM/">PTAM</a>) and an incremetal surface reconstruction method (e.g. <a href="https://era.library.ualberta.ca/files/5t34sm036">Free-space carving</a>), one can reconstruct a surface of the scene incrementally in real-time, as shown in Figure 1. 
+Combining a sparse SLAM system (e.g. <a href="http://www.robots.ox.ac.uk/~gk/PTAM/">PTAM</a>, <a href="http://webdiis.unizar.es/~raulmur/orbslam/">ORB-SLAM</a>) and an incremetal surface reconstruction method (e.g. <a href="https://era.library.ualberta.ca/files/5t34sm036">Free-space carving</a>), one can reconstruct a surface of the scene incrementally in real-time, as shown in Figure 1. 
 However, the statement does not hold true for semi-dense SLAM systems.
 Although a semi-dense SLAM system (e.g. <a href="https://vision.in.tum.de/research/vslam/lsdslam">LSD-SLAM</a>) can extract much more points from the scene, as shown in Figure 2, it is chanllenging to utilize all of them in the task of real-time surface reconstruction.  
 In order to utilize the information in the semi-dense points and improve the quality of the reconstructed surface, we attempt to simplify the generated semi-dense point cloud using 3D line segments.
 The heuristic here is that the points which contributes the most to the surface are more likely to be found on 3D line segments.
 By extracting line segments, we can greatly reduce the number of elements while maintaining the major structure of the scene, which enables real-time surface reconstruction using semi-dense SLAM.
             </p>
-            <div class="c-wrapper">
+            <div class="d-wrapper">
 	      <div class="text-center">
               <img src="img/carv1.png" class="img-fluid" alt="Free-space carving">
-              <p align="center"> Figure 1. Surface reconstructed using PTAM and Free-space carving </p>
+              <p align="center"> Figure 1. Surface reconstructed using PTAM and Free-space carving. </p>
               </div>
             </div>
 	      <div class="text-center">
-              <img src="img/Screenshot_ptam_lsd_map.png" class="img-fluid" alt="Free-space carving">
-              <p align="center"> Figure 2. Sample point cloud of PTAM (left) and LSD-SLAM (right)</p>
+              <img src="img/Screenshot_ptam_lsd_map.png" class="img-fluid" alt="Sample point cloud">
+              <p align="center"> Figure 2. Sample point cloud of sparse SLAM (PTAM) and semi-dense SLAM (LSD-SLAM).</p>
               </div>
          </div>
         </div>
@@ -151,7 +151,75 @@ By extracting line segments, we can greatly reduce the number of elements while 
         <div class="row">
           <div class="col-lg-12 mx-auto">
             <h2>Results</h2>
-            <p class="lead"></p>
+            <p class="lead">
+Our method operates on the result of semi-dense SLAM systems.
+We perform 2D edge extraction from keyframe images. 
+Depth information of the extracted edge pixels can be obtained from the semi-dense SLAM. 
+Then we search 3D line segments along these pixels chains by minimizing fitting error on both image plane and depth plane.
+In this way, the 3D line segment extraction problem is reduced into two 2D simple line segment fitting problem for each segment. 
+We limit the error on both plane so that the extracted 3D line segments fit the point cloud accurately.
+Also, in order to furthur reduce the number of elements, we perform incremental clustering on the extracted 3D line segments to merge redundant line segments. 
+            </p>
+
+            <div class="r-wrapper">
+            <div class="row">
+            <div class="col">
+	      <div class="text-center">
+              <img src="img/v101_original.jpg" class="img-fluid" alt="Free-space carving">
+              <p align="center"> Figure 3. Sample original image from sequence Vicon Room 101 in <a href="https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets">EuRoC MAV dataset</a>.</p>
+              </div>
+            </div>
+            <div class="col">
+	      <div class="text-center">
+              <img src="img/v101_semidense.jpg" class="img-fluid" alt="Free-space carving">
+              <p align="center"> Figure 4. Semi-dense point cloud produced by <a href="https://www.youtube.com/watch?v=HlBmq70LKrQ">ORB-SLAM with semi-dense module</a>.</p>
+              </div>
+            </div>
+            </div>
+            <div class="row">
+            <div class="col">
+	      <div class="text-center">
+              <img src="img/v101_short.jpg" class="img-fluid" alt="Free-space carving">
+              <p align="center"> Figure 5. 3D line segments extracted using our method. Notice our method significantly reduces the amount of outliers on the right side of the image.</p>
+              </div>
+            </div>
+            <div class="col">
+	      <div class="text-center">
+              <img src="img/v101_short_cluster.jpg" class="img-fluid" alt="Free-space carving">
+              <p align="center"> Figure 6. 3D line segments after incremental clustering, which reduces the number of elements while keeping the major structure of the scene.</p>
+              </div>
+            </div>
+            </div>
+            </div>
+
+            <p class="lead">
+Given the extracted line segments, we can reconstruct the surface of the scene. 
+Our incremental surface reconstruction method takes the endpoints of the 3D line segments and triangulate them into tetrahedra by performing 3D Delaunay Triangulation.
+After dividing the tetrahedra into two categories: free space and occupied space, we can take the triangles in between the two kinds of tetrahedra as the surface. 
+Compared with using the sparse points from sparse SLAM, using the endpoints of line segments extracted by our method can produce surfaces with much higher quality.
+            </p>
+
+            <div class="r-wrapper">
+	      <div class="text-center">
+              <img src="img/thesis_webpage_images_surface_mappoints.png" class="img-fluid" alt="Free-space carving">
+              <p align="center"> Figure 7. Sample original image and the surface reconstructed using sparse map points of ORB-SLAM.</p>
+              </div>
+            </div>
+            <div class="r-wrapper">
+	      <div class="text-center">
+              <img src="img/thesis_webpage_images_surface_endpoints.png" class="img-fluid" alt="Free-space carving">
+              <p align="center"> Figure 8. Sample original image and the surface reconstructed using endpoints of the line segments extracted by our method.</p>
+              </div>
+            </div>
+
+
+
+
+<br>
+<br>
+<br>
+
+<h2>More results</h2>
 
 
 <div class="text-center">
